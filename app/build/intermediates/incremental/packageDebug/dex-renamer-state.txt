@@ -1,0 +1,4 @@
+#Thu Jun 09 11:38:41 CEST 2016
+base.0=C\:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+renamed.0=classes.dex
+file.0=C\:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex

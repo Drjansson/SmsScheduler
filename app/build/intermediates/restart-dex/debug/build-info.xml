@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi,armeabi-v7a"
+    api-level="23"
+    density="xxhdpi"
+    format="7"
+    timestamp="1689623777431476" >
+
+    <task
+        name="javac"
+        duration="0" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="0" />
+    <task
+        name="verifier"
+        duration="0" />
+
+    <build timestamp="1689241170539693" >
+        <artifact
+            location="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\outputs\apk\app-debug.apk"
+            type="MAIN" />
+    </build>
+    <build timestamp="1689578015380470" >
+        <artifact
+            location="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\transforms\dex\debug\folders\1000\5\slice_0\classes.dex"
+            type="DEX" />
+    </build>
+    <build timestamp="1689623777431476" />
+
+</instant-run>

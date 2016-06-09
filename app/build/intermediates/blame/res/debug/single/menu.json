@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\build\\intermediates\\res\\merged\\debug\\menu\\contacts_menu.xml",
+        "source": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\src\\main\\res\\menu\\contacts_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\build\\intermediates\\res\\merged\\debug\\menu\\log_menu.xml",
+        "source": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\src\\main\\res\\menu\\log_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\build\\intermediates\\res\\merged\\debug\\menu\\main_menu.xml",
+        "source": "C:\\Users\\David\\.AndroidStudio1.5\\SmsScheduler\\app\\src\\main\\res\\menu\\main_menu.xml"
+    }
+]

@@ -1,0 +1,2 @@
+CHANGED,C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\drj\smsscheduler\Contacts$override.class
+CHANGED,C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\transforms\instantRun\debug\folders\4000\5\enhanced\com\android\tools\fd\runtime\AppPatchesLoaderImpl.class
