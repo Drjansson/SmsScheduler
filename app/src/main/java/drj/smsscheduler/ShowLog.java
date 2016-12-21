@@ -1,5 +1,8 @@
 package drj.smsscheduler;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 
 public class ShowLog extends AppCompatActivity{
 
+    Context context;
     TextView txtLog;
 
     Log log = null;
@@ -22,6 +26,7 @@ public class ShowLog extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.log_layout);
+        context = this;
 
         // my_child_toolbar is defined in the layout file
         Toolbar myChildToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -63,7 +68,22 @@ public class ShowLog extends AppCompatActivity{
                 finish();
                 break;
             case R.id.actBarClear:
-                clearLog();
+                new AlertDialog.Builder(context)
+                        .setTitle("Clear")
+                        .setMessage("Are you sure you want to clear the whole log?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                clearLog();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
                 return true;
 
         }

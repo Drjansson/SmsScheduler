@@ -2,8 +2,10 @@ package drj.smsscheduler;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +35,8 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
     final private int PICK_CONTACT_REQUEST = 1;
+
+    Context context;
 
     private EditText txtMain;
     private TextView txtDate;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         setContentView(R.layout.main_layout);
         Toolbar mToolBar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
+        context = this;
 
         mToolBar.setBackgroundColor(ContextCompat.getColor(this,android.R.color.holo_blue_light));
 
@@ -142,6 +148,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     public void scheduleAlarm() {
 
+        if(numbers.isEmpty()) {
+            Toast.makeText(this, "No contacts has been selected. SMS not sent.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intentAlarm = new Intent(this, AlarmReceiver.class);
         intentAlarm.putStringArrayListExtra("Number", numbers); //txtNumber.getText().toString().isEmpty() ? "0708808523" : txtNumber.getText().toString() );
         intentAlarm.putExtra("Message", txtMain.getText().toString());
@@ -227,6 +237,29 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             case R.id.actBarLog:
                 Intent logIntent = new Intent(this, ShowLog.class);
                 startActivity(logIntent);
+                return true;
+
+            case R.id.actBarClear:
+
+                new AlertDialog.Builder(context)
+                        .setTitle("Clear")
+                        .setMessage("Are you sure you want to clear?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                txtMain.setText("");
+                                clearTime();
+                                numbers.clear();
+                                names.clear();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
                 return true;
 
             default:
