@@ -143,7 +143,7 @@ public class Contacts extends AppCompatActivity {
                         ListItem item = new ListItem(name, phoneNo);
                         for(int i = 0; i< alreadySelectedItems.size(); i++){
                             if(item.equals(alreadySelectedItems.get(i))){
-                                item.setBackgroundColor(ContextCompat.getColor(context, R.color.listItemBackgroundSelected));
+                                item.setSelected(true);
                                 selectedItems.add(item);
                             }
                         }

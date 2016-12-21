@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -35,13 +37,15 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
     final private int PICK_CONTACT_REQUEST = 1;
+    private boolean SHOW_CLEAR_BUTTON = false;
 
-    Context context;
+    private Context context;
 
     private EditText txtMain;
     private TextView txtDate;
     private ArrayList<String> numbers = new ArrayList<String>();
     private ArrayList<String> names = new ArrayList<String>();
+    private MenuItem itemClear;
 
     private AlarmManager alarmManager;
     private Calendar calendar;
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private int minute;
 
     private boolean timeChoosen = false;
+    private boolean contactsChoosen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +72,30 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         txtDate = (TextView) findViewById(R.id.txtDate);
         Button btnNumber = (Button) findViewById(R.id.btnNumber);
-
-
         txtMain = (EditText) findViewById(R.id.txtMain);
+
+        txtMain.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(txtMain.getText().length() > 0 && SHOW_CLEAR_BUTTON == false){
+                    SHOW_CLEAR_BUTTON = true;
+                    invalidateOptionsMenu();
+                }else if(s.length() <= 0 && !contactsChoosen && !timeChoosen){
+                    SHOW_CLEAR_BUTTON = false;
+                    invalidateOptionsMenu();
+                }
+            }
+        });
 
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -133,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String formattedDate = df.format(calendar.getTime());
         txtDate.setText("Scheduled time to send SMS: " + formattedDate);
+        SHOW_CLEAR_BUTTON = true;
+        invalidateOptionsMenu();
         showTimePickerDialog();
     }
 
@@ -144,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String formattedDate = df.format(calendar.getTime());
         txtDate.setText("Scheduled time to send SMS: " + formattedDate);
+        SHOW_CLEAR_BUTTON = true;
+        invalidateOptionsMenu();
     }
 
     public void scheduleAlarm() {
@@ -224,6 +254,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the main_menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        if(!SHOW_CLEAR_BUTTON) {
+            itemClear = menu.findItem(R.id.actBarClear);
+            itemClear.setVisible(false);
+        }
         return true;
     }
 
@@ -250,6 +284,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                                 clearTime();
                                 numbers.clear();
                                 names.clear();
+                                contactsChoosen = false;
+                                SHOW_CLEAR_BUTTON = false;
+                                invalidateOptionsMenu();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -281,7 +318,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 numbers = data.getStringArrayListExtra("Number");
                 names = data.getStringArrayListExtra("Names");
 
-                // Do something with the contact here (bigger example below)
+                if(!(numbers.isEmpty() && names.isEmpty())){
+                    SHOW_CLEAR_BUTTON = true;
+                    invalidateOptionsMenu();
+                }
+                contactsChoosen = true;
             }
         }
     }
