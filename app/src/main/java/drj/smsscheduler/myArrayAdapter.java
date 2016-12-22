@@ -22,7 +22,7 @@ public class myArrayAdapter extends ArrayAdapter<ListItem> {
         LIST_ITEM, HEADER_ITEM
     }
 
-    public myArrayAdapter(Context context, List<ListItem> items) {
+    public myArrayAdapter(Context context, ArrayList<ListItem> items) {
         super(context, 0, items);
         itemsInList.addAll(items);
         mInflater = LayoutInflater.from(context);

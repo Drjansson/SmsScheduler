@@ -34,6 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+//TODO: Show which contacts that has been selected. (And will receive a message if it's sent)
+//TODO: have the loading of the contacts happen in a separate thread.
+
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
     final private int PICK_CONTACT_REQUEST = 1;
