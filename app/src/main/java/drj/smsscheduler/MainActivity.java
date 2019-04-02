@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private boolean timeChoosen = false;
     private boolean contactsChoosen = false;
 
+    private boolean testBoolean = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
