@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\23.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.android.support-support-vector-drawable-23.4.0_0f8abd8208aab346cb5e17b7728046d651967265.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="H:\Programmering\AndroidSDK\extras\android\m2repository\com\android\support\support-annotations\23.4.0\support-annotations-23.4.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\support-annotations-23.4.0_8112633421b62afa408bdd9e0e75095aaa55a822.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-23.4.0_335335f4b717b536f6a892f9e6c22263798bcff6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.4.0\jars\libs\internal_impl-23.4.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\internal_impl-23.4.0_03702a9ab883ac302b5594bb705898a39827f905.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\8.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-base-8.4.0_801d1f25178b9771ece2bed17e2569863a15ecd3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-23.4.0_124ee66b9c6982796bb7a867ac3bc8056667f373.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\23.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.android.support-animated-vector-drawable-23.4.0_3cca39e220b28217c9f61c6b661ae8e125c640eb.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-appindexing-8.4.0_1b24cf26edd31a31d94e13e4e2d763f4d5ef76e5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.4.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-basement-8.4.0_161beb05a15663b81c1641be2d09b19004abe6f8.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="H:\Programmering\AndroidSDK\extras\m2repository\com\android\support\constraint\constraint-layout-solver\1.0.0-alpha2\constraint-layout-solver-1.0.0-alpha2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="aa52b18e81a499129a981d0d8681b8b030130a6d">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\constraint-layout-solver-1.0.0-alpha2_bf1c186df5733a85b188fe784994efa5b1445246.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\exploded-aar\com.android.support.constraint\constraint-layout\1.0.0-alpha2\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.2"
+        sha1="ef0c8364efe2e1b72b3903d6ba588d6cbde9aa6f">
+        <dex dex="C:\Users\David\.AndroidStudio1.5\SmsScheduler\app\build\intermediates\pre-dexed\debug\com.android.support.constraint-constraint-layout-1.0.0-alpha2_95a5804043c959765228bcaaab0106ff4efa8d80.jar" />
+    </item>
+
+</items>

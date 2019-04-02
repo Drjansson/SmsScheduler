@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/actBarClear"
+        android:icon="@drawable/ic_clear_black_24dp"
+        android:title="@string/clear"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/actBarSend"
+        android:icon="@drawable/ic_send_black_24dp"
+        android:title="@string/send"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/actBarLog"
+        android:icon="@drawable/ic_toc_black_24dp"
+        android:title="@string/log"
+        app:showAsAction="ifRoom"/>
+
+<!-- Settings, should always be in the overflow >
+<item android:id="@+id/action_settings"
+    android:title="@string/settings"
+    app:showAsAction="never"/-->
+
+</menu>
