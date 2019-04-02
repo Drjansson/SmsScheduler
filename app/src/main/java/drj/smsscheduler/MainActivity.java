@@ -37,6 +37,7 @@ import java.util.Calendar;
 //TODO: Show which contacts that has been selected. (And will receive a message if it's sent)
 //TODO: have the loading of the contacts happen in a separate thread.
 //TODO: Enable notifications, when sms sent or failed if I can detect that.
+//TODO: Have a list of scheduled SMS, and be able to cancel a scheduled SMS. 
 
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
