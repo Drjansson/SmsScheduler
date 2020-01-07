@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">SmsScheduler</string>
+    <string name="msgHint">Message...</string>
     <string name="send">Send</string>
     <string name="settings">Settings</string>
     <string name="log">Message Log</string>
