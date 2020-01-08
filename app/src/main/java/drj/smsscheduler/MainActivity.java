@@ -7,6 +7,8 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.app.PendingIntent;
@@ -19,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 //TODO: Show which contacts that has been selected. (And will receive a message if it's sent)
 //TODO: have the loading of the contacts happen in a separate thread.
@@ -48,9 +50,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     private EditText txtMain;
     private TextView txtDate;
-    private ArrayList<String> numbers = new ArrayList<String>();
-    private ArrayList<String> names = new ArrayList<String>();
-    private MenuItem itemClear;
+    private ArrayList<String> numbers = new ArrayList<>();
+    private ArrayList<String> names = new ArrayList<>();
 
     private AlarmManager alarmManager;
     private Calendar calendar;
@@ -62,24 +63,45 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private int hour;
     private int minute;
 
+    private Boolean fabIsOpen = false;
+
     private boolean timeChoosen = false;
     private boolean contactsChoosen = false;
 
-    private boolean testBoolean = false;
+    //private boolean testBoolean = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-        Toolbar mToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar mToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
         context = this;
 
         mToolBar.setBackgroundColor(ContextCompat.getColor(this,android.R.color.holo_blue_light));
 
-        txtDate = (TextView) findViewById(R.id.txtDate);
-        Button btnNumber = (Button) findViewById(R.id.btnNumber);
-        txtMain = (EditText) findViewById(R.id.txtMain);
+        txtDate = findViewById(R.id.txtDate);
+        Button btnNumber = findViewById(R.id.btnNumber);
+        FloatingActionButton btnFloat = findViewById(R.id.btnFloat);
+        txtMain = findViewById(R.id.txtMain);
+
+        btnFloat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                findViewById(R.id.textview_mail).setVisibility(View.VISIBLE);
+                findViewById(R.id.textview_share).setVisibility(View.VISIBLE);
+                //fab2_share.startAnimation(fab_open);
+                //fab1_mail.startAnimation(fab_open);
+                //fab_main.startAnimation(fab_clock);
+                findViewById(R.id.fab2).setVisibility(View.VISIBLE);
+                findViewById(R.id.fab1).setVisibility(View.VISIBLE);
+                findViewById(R.id.fab2).setClickable(true);
+                findViewById(R.id.fab1).setClickable(true);
+                fabIsOpen = true;
+
+            }
+        });
 
         txtMain.addTextChangedListener(new TextWatcher() {
             @Override
@@ -94,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(txtMain.getText().length() > 0 && SHOW_CLEAR_BUTTON == false){
+                if(txtMain.getText().length() > 0 && !SHOW_CLEAR_BUTTON){
                     SHOW_CLEAR_BUTTON = true;
                     invalidateOptionsMenu();
                 }else if(s.length() <= 0 && !contactsChoosen && !timeChoosen){
@@ -112,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
         String formattedDate = df.format(calendar.getTime());
         // Now we display formattedDate value in TextView
         if(timeChoosen) {
@@ -238,22 +260,18 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT)
-                            .show();
-                    alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntentAlarm);
-                } else {
-                    // Permission Denied
-                    Toast.makeText(this, "EXTERNAL_STORAGE Denied", Toast.LENGTH_SHORT)
-                            .show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntentAlarm);
+            } else {
+                // Permission Denied
+                Toast.makeText(this, "EXTERNAL_STORAGE Denied", Toast.LENGTH_SHORT).show();
+            }
+        } else{
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -262,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         // Inflate the main_menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
         if(!SHOW_CLEAR_BUTTON) {
-            itemClear = menu.findItem(R.id.actBarClear);
+            MenuItem itemClear = menu.findItem(R.id.actBarClear);
             itemClear.setVisible(false);
         }
         return true;
