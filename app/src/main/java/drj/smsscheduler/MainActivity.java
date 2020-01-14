@@ -24,6 +24,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -35,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 //TODO: Show which contacts that has been selected. (And will receive a message if it's sent)
 //TODO: have the loading of the contacts happen in a separate thread.
@@ -43,13 +46,17 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
-    final private int PICK_CONTACT_REQUEST = 1;
+    final public int PICK_CONTACT_REQUEST = 1;
+    public static int GET_CONTACT_REQUEST = 2;
     private boolean SHOW_CLEAR_BUTTON = false;
 
     private Context context;
 
     private EditText txtMain;
     private TextView txtDate;
+    private TextView txtFabMenu1, txtFabMenu2;
+    FloatingActionButton btnFloat, fabMenu1, fabMenu2;
+    private Animation fabAnimOpen, fabAnimClose, fabanimClock, fabAnimAntiClock;
     private ArrayList<String> numbers = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
 
@@ -82,26 +89,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         txtDate = findViewById(R.id.txtDate);
         Button btnNumber = findViewById(R.id.btnNumber);
-        FloatingActionButton btnFloat = findViewById(R.id.btnFloat);
         txtMain = findViewById(R.id.txtMain);
 
-        btnFloat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                findViewById(R.id.textview_mail).setVisibility(View.VISIBLE);
-                findViewById(R.id.textview_share).setVisibility(View.VISIBLE);
-                //fab2_share.startAnimation(fab_open);
-                //fab1_mail.startAnimation(fab_open);
-                //fab_main.startAnimation(fab_clock);
-                findViewById(R.id.fab2).setVisibility(View.VISIBLE);
-                findViewById(R.id.fab1).setVisibility(View.VISIBLE);
-                findViewById(R.id.fab2).setClickable(true);
-                findViewById(R.id.fab1).setClickable(true);
-                fabIsOpen = true;
-
-            }
-        });
+        InitializeFAB();
 
         txtMain.addTextChangedListener(new TextWatcher() {
             @Override
@@ -161,7 +151,92 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 Intent contactIntent = new Intent(MainActivity.this, Contacts.class);
                 contactIntent.putStringArrayListExtra("Numbers", numbers);
                 contactIntent.putStringArrayListExtra("Names", names);
+                contactIntent.putExtra("requestCode", PICK_CONTACT_REQUEST);
                 startActivityForResult(contactIntent, PICK_CONTACT_REQUEST);
+            }
+        });
+
+    }
+
+    private void InitializeFAB() {
+
+        btnFloat = findViewById(R.id.btnFloat);
+        fabMenu1 = findViewById(R.id.fabMenu1);
+        fabMenu2 = findViewById(R.id.fab2);
+        fabAnimOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fabAnimClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        fabAnimAntiClock = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_anticlock);
+        fabanimClock = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_clock);
+        txtFabMenu1 = findViewById(R.id.txtOMW);
+        txtFabMenu2 = findViewById(R.id.textview_share);
+
+        btnFloat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                findViewById(R.id.txtOMW).setVisibility(View.VISIBLE);
+                findViewById(R.id.textview_share).setVisibility(View.VISIBLE);
+                //fab2_share.startAnimation(fabAnimOpen);
+                //fab1_mail.startAnimation(fabAnimOpen);
+                //fab_main.startAnimation(fabanimClock);
+                findViewById(R.id.fab2).setVisibility(View.VISIBLE);
+                findViewById(R.id.fabMenu1).setVisibility(View.VISIBLE);
+                findViewById(R.id.fab2).setClickable(true);
+                findViewById(R.id.fabMenu1).setClickable(true);
+                fabIsOpen = true;
+
+            }
+        });
+
+        btnFloat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (fabIsOpen) {
+
+                    txtFabMenu1.setVisibility(View.INVISIBLE);
+                    txtFabMenu2.setVisibility(View.INVISIBLE);
+                    fabMenu2.startAnimation(fabAnimClose);
+                    fabMenu1.startAnimation(fabAnimClose);
+                    btnFloat.startAnimation(fabAnimAntiClock);
+                    fabMenu2.setClickable(false);
+                    fabMenu1.setClickable(false);
+                    fabIsOpen = false;
+                } else {
+                    txtFabMenu1.setVisibility(View.VISIBLE);
+                    txtFabMenu2.setVisibility(View.VISIBLE);
+                    fabMenu2.startAnimation(fabAnimOpen);
+                    fabMenu1.startAnimation(fabAnimOpen);
+                    btnFloat.startAnimation(fabanimClock);
+                    fabMenu2.setClickable(true);
+                    fabMenu1.setClickable(true);
+                    fabIsOpen = true;
+                }
+
+            }
+        });
+
+
+        fabMenu2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Share", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        fabMenu1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent contactIntent = new Intent(MainActivity.this, Contacts.class);
+                contactIntent.putStringArrayListExtra("Numbers", numbers);
+                contactIntent.putStringArrayListExtra("Names", names);
+                contactIntent.putExtra("requestCode", GET_CONTACT_REQUEST);
+                contactIntent.putExtra("selection", "1David");
+                startActivityForResult(contactIntent, GET_CONTACT_REQUEST);
+                //numbers = "+46"
+                Toast.makeText(getApplicationContext(), "Share", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -205,15 +280,18 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         invalidateOptionsMenu();
     }
 
-    public void scheduleAlarm() {
+    public void scheduleAlarm(String message) {
 
         if(numbers.isEmpty()) {
             Toast.makeText(this, "No contacts has been selected. SMS not sent.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        //TODO: Create a function that can send sms directly? Without the AlarmReceiver.
         Intent intentAlarm = new Intent(this, AlarmReceiver.class);
-        intentAlarm.putStringArrayListExtra("Number", numbers); //txtNumber.getText().toString().isEmpty() ? "0708808523" : txtNumber.getText().toString() );
-        intentAlarm.putExtra("Message", txtMain.getText().toString());
+        intentAlarm.putStringArrayListExtra("Number", numbers); //txtNumber.getText().toString().isEmpty() ? "" : txtNumber.getText().toString() );
+        intentAlarm.putExtra("Message", message.equalsIgnoreCase("")
+                    ? txtMain.getText().toString() : message);
         pendingIntentAlarm = PendingIntent.getBroadcast(this, 0, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -290,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actBarSend:
-                scheduleAlarm();
+                scheduleAlarm("");
                 return true;
 
             case R.id.actBarLog:
@@ -348,6 +426,18 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                     invalidateOptionsMenu();
                 }
                 contactsChoosen = true;
+            }
+        } else if(requestCode == GET_CONTACT_REQUEST){
+            if(resultCode == RESULT_OK){
+                numbers = data.getStringArrayListExtra("Number");
+                names = data.getStringArrayListExtra("Names");
+
+                Random rand = new Random();
+                scheduleAlarm(Utils.omwMessages[rand.nextInt(Utils.omwMessages.length)]);
+
+                numbers.clear();
+                names.clear();
+
             }
         }
     }

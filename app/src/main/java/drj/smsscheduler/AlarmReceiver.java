@@ -4,8 +4,6 @@ package drj.smsscheduler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.telephony.SmsManager;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 

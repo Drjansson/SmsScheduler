@@ -8,6 +8,13 @@ import java.util.Calendar;
 
 public class Utils {
 
+    public static String[] omwMessages = {"omw",
+                                        "I'm coming home, I'm coming home, tell the world I'm coming home!",
+                                        "You better be prepared, I'm omw home.",
+                                        "On my way home.",
+                                        "Home in a bit",
+                                        "On my bike home now"};
+
     public static String translateMonths(int month){
         switch(month) {
             case Calendar.JANUARY:
