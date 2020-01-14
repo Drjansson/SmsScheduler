@@ -40,7 +40,7 @@ android:layout_height="match_parent">
     android:layout_marginRight="24dp" />
 
 <TextView
-    android:id="@+id/textview_mail"
+    android:id="@+id/txtOMW"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
@@ -49,7 +49,7 @@ android:layout_height="match_parent">
     android:layout_marginEnd="88dp"
     android:background="#212121"
     android:padding="8dp"
-    android:text="Email"
+    android:text="OMW Jacqui"
     android:textColor="#ffffff"
     android:visibility="invisible"
     android:layout_alignParentRight="true"
@@ -57,7 +57,7 @@ android:layout_height="match_parent">
 
 
 <android.support.design.widget.FloatingActionButton
-    android:id="@+id/fab1"
+    android:id="@+id/fabMenu1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
@@ -75,27 +75,27 @@ android:layout_height="match_parent">
     android:layout_alignParentRight="true"
     android:layout_marginRight="24dp" />
 
-<android.support.design.widget.FloatingActionButton
-    android:id="@+id/btnFloat"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_alignParentEnd="true"
-    android:layout_marginBottom="44dp"
-    android:layout_marginEnd="44dp"
-    android:layout_marginRight="44dp"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:elevation="16dp"
-    android:focusable="true"
-    android:visibility="visible"
-    app:backgroundTint="#ffffff"
-    app:pressedTranslationZ="12dp"
-    app:srcCompat="@android:drawable/presence_away"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnFloat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="36dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:elevation="16dp"
+        android:focusable="true"
+        android:visibility="visible"
+        app:backgroundTint="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:pressedTranslationZ="12dp"
 
-    android:layout_alignParentRight="true" />
+        app:srcCompat="@android:drawable/presence_away" />
 
 
 </RelativeLayout>
