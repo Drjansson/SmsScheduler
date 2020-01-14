@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -25,8 +26,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -45,7 +46,7 @@ public class Contacts extends AppCompatActivity {
     ArrayList<ListItem> alreadySelectedItems = new ArrayList<>();
     myArrayAdapter adapter;
     ListView listView;
-    ProgressDialog progress;
+    //ProgressDialog progress;
 
     private ArrayList<String> receivedNumbers = new ArrayList<>();
     private ArrayList<String> receivedNames = new ArrayList<>();
@@ -57,31 +58,35 @@ public class Contacts extends AppCompatActivity {
         Toolbar mToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
 
-        if (getIntent().getExtras().getInt("requestCode", 0) == MainActivity.GET_CONTACT_REQUEST) {
-            String searchString = getIntent().getStringExtra("selection");
-            String selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE \"%" + searchString + "%\"";
+        Bundle bundle = getIntent().getExtras();
+            if (bundle != null && bundle.getInt("requestCode", 0) == MainActivity.GET_CONTACT_REQUEST) {
+                String searchString = getIntent().getStringExtra("selection");
+                String selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE \"%" + searchString + "%\"";
 
-            Pair<String, String> contact = getContact(selection, ContactsContract.CommonDataKinds.Phone.TYPE_MAIN);
+                Pair<String, String> contact = getContact(selection, ContactsContract.CommonDataKinds.Phone.TYPE_MAIN);
 
-            //TODO error checking..
-            Intent intent = new Intent();
-            ArrayList<String> numbers = new ArrayList<>();
-            numbers.add(contact.second);
-            ArrayList<String> names = new ArrayList<>();
-            names.add(contact.first);
+                //TODO error checking..
+                Intent intent = new Intent();
+                ArrayList<String> numbers = new ArrayList<>();
+                numbers.add(contact.second);
+                ArrayList<String> names = new ArrayList<>();
+                names.add(contact.first);
 
-            intent.putStringArrayListExtra("Number", numbers);
-            intent.putStringArrayListExtra("Names", names);
+                intent.putStringArrayListExtra("Number", numbers);
+                intent.putStringArrayListExtra("Names", names);
 
-            setResult(RESULT_OK, intent);
-            finish();
-        }
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+
 
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
 
         // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         context = this;
         Intent informationIntent = getIntent();
@@ -119,7 +124,8 @@ public class Contacts extends AppCompatActivity {
 
         } else {
 
-            new runAsyncTask().execute(alreadySelectedItems);
+            runAsyncTask createContactList = new runAsyncTask(this);
+            createContactList.execute();
             //populateContacts();
         }
 
@@ -141,15 +147,29 @@ public class Contacts extends AppCompatActivity {
 
     }
 
-    private void updateList(ArrayList<ListItem> listToDisplay) {
+    /*private void updateList(ArrayList<ListItem> listToDisplay) {
+        for (int i = 0; i < alreadySelectedItems.size(); i++) {
+            for (ListItem listItem: listToDisplay) {
+                if (listItem.equals(alreadySelectedItems.get(i))) {
+                    listItem.setSelected(true);
+                    selectedItems.add(listItem);
+                }
+            }
+        }
         listItems.addAll(listToDisplay);
         allContacts.addAll(listToDisplay);
         Collections.sort(listItems);
         Collections.sort(allContacts);
         adapter.notifyDataSetChanged();
-    }
+    }*/
 
     private void updateList(ListItem listItem) {
+        for (int i = 0; i < alreadySelectedItems.size(); i++) {
+            if (listItem.equals(alreadySelectedItems.get(i))) {
+                listItem.setSelected(true);
+                selectedItems.add(listItem);
+            }
+        }
         listItems.add(listItem);
         allContacts.add(listItem);
         Collections.sort(listItems);
@@ -160,14 +180,22 @@ public class Contacts extends AppCompatActivity {
     //Populates the contact list.
     // TODO: Make this return a small number each time so I can remove the progressDialog.
 
-    private class runAsyncTask extends AsyncTask<ArrayList<ListItem>, ListItem, ArrayList<ListItem>> {
+    private static class runAsyncTask extends AsyncTask<Void, ListItem, ArrayList<ListItem>> {
+        WeakReference<Contacts> contactsRef;
 
-        protected ArrayList<ListItem> doInBackground(ArrayList<ListItem>... params) {
+        runAsyncTask(Contacts contactsClass){
+            contactsRef = new WeakReference<>(contactsClass);
+        }
+
+        protected ArrayList<ListItem> doInBackground(Void... Params) {
+            Contacts contacts = contactsRef.get();
             ArrayList<ListItem> contactsList = new ArrayList<>();
-            ContentResolver cr = getContentResolver();
+            ContentResolver cr = contacts.getContentResolver();
             Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                     null, null, null, null);
 
+            if(cur == null)
+                return contactsList;
 
             if (cur.getCount() > 0) {
                 while (cur.moveToNext()) {
@@ -180,16 +208,12 @@ public class Contacts extends AppCompatActivity {
                                 null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                                 new String[]{id}, null);
+                        if(pCur == null)
+                            return contactsList;
                         while (pCur.moveToNext()) {
                             String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             //android.util.Log.i("Contacts", "Name: " + name + ", Phone No: " + phoneNo);
                             ListItem item = new ListItem(name, phoneNo);
-                            for (int i = 0; i < params[0].size(); i++) {
-                                if (item.equals(params[0].get(i))) {
-                                    item.setSelected(true);
-                                    selectedItems.add(item);
-                                }
-                            }
                             publishProgress(item);
                             contactsList.add(item);
                         }
@@ -210,12 +234,14 @@ public class Contacts extends AppCompatActivity {
             progress.show();*/
         }
 
-        protected void onProgressUpdate(ArrayList<ListItem>... progress) {
-            updateList(progress[0]);
-        }
+        /*protected void onProgressUpdate(ArrayList<ListItem>... progress) {
+            Contacts contacts = contactsRef.get();
+            contacts.updateList(progress[0]);
+        }*/
 
         protected void onProgressUpdate(ListItem... progress) {
-            updateList(progress[0]);
+            Contacts contacts = contactsRef.get();
+            contacts.updateList(progress[0]);
         }
 
         protected void onPostExecute(ArrayList<ListItem> result) {
@@ -225,24 +251,22 @@ public class Contacts extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT)
-                            .show();
-                    new runAsyncTask().execute(alreadySelectedItems);
-                    //populateContacts();
-                } else {
-                    // Permission Denied
-                    Toast.makeText(this, "READ CONTACTS permission Denied", Toast.LENGTH_SHORT)
-                            .show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+                Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                runAsyncTask getContacts = new runAsyncTask(this);
+                getContacts.execute();
+
+            } else {
+                // Permission Denied
+                Toast.makeText(this, "READ CONTACTS permission Denied", Toast.LENGTH_SHORT).show();
+            }
         }
+        else
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
     }
 
     @Override
@@ -310,12 +334,14 @@ public class Contacts extends AppCompatActivity {
 
     private Pair<String, String> getContact(String selection, int selectedType) {
         String nameResult = "";
-        String noResult = "";
+        String numResult = "";
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, selection, null, null);
 
-        try {
+        if(cur == null)
+            return new Pair<>(nameResult, numResult);
+
             if (cur.getCount() > 0) {
                 while (cur.moveToNext()) {
                     String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
@@ -341,17 +367,15 @@ public class Contacts extends AppCompatActivity {
                                     tmpNums.add(phoneNo);
                             }
                             pCur.close();
-                            noResult = tmpNums.get(0);
+                            numResult = tmpNums.get(0);
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         cur.close();
-        return new Pair<>(nameResult, noResult);
+        return new Pair<>(nameResult, numResult);
     }
 
 }
