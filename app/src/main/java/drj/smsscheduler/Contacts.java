@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -18,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +25,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,23 +39,43 @@ public class Contacts extends AppCompatActivity {
 
     Context context;
 
-    ArrayList<ListItem> listItems=new ArrayList<ListItem>();
-    ArrayList<ListItem> allContacts=new ArrayList<ListItem>();
-    ArrayList<ListItem> selectedItems = new ArrayList<ListItem>();
-    ArrayList<ListItem> alreadySelectedItems = new ArrayList<ListItem>();
+    ArrayList<ListItem> listItems = new ArrayList<>();
+    ArrayList<ListItem> allContacts = new ArrayList<>();
+    ArrayList<ListItem> selectedItems = new ArrayList<>();
+    ArrayList<ListItem> alreadySelectedItems = new ArrayList<>();
     myArrayAdapter adapter;
     ListView listView;
     ProgressDialog progress;
 
-    private ArrayList<String> receivedNumbers = new ArrayList<String>();
-    private ArrayList<String> receivedNames = new ArrayList<String>();
+    private ArrayList<String> receivedNumbers = new ArrayList<>();
+    private ArrayList<String> receivedNames = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts_layout);
-        Toolbar mToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar mToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
+
+        if (getIntent().getExtras().getInt("requestCode", 0) == MainActivity.GET_CONTACT_REQUEST) {
+            String searchString = getIntent().getStringExtra("selection");
+            String selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE \"%" + searchString + "%\"";
+
+            Pair<String, String> contact = getContact(selection, ContactsContract.CommonDataKinds.Phone.TYPE_MAIN);
+
+            //TODO error checking..
+            Intent intent = new Intent();
+            ArrayList<String> numbers = new ArrayList<>();
+            numbers.add(contact.second);
+            ArrayList<String> names = new ArrayList<>();
+            names.add(contact.first);
+
+            intent.putStringArrayListExtra("Number", numbers);
+            intent.putStringArrayListExtra("Names", names);
+
+            setResult(RESULT_OK, intent);
+            finish();
+        }
 
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
@@ -64,28 +85,28 @@ public class Contacts extends AppCompatActivity {
 
         context = this;
         Intent informationIntent = getIntent();
-        if(informationIntent.getStringArrayListExtra("Names") != null && informationIntent.getStringArrayListExtra("Numbers") != null) {
+        if (informationIntent.getStringArrayListExtra("Names") != null && informationIntent.getStringArrayListExtra("Numbers") != null) {
             receivedNames = informationIntent.getStringArrayListExtra("Names");
             receivedNumbers = informationIntent.getStringArrayListExtra("Numbers");
         }
         //fill in the alreadySelectedItems array with the data from the intent.
-        if(receivedNumbers.size() > 0 && receivedNumbers.size() == receivedNames.size()){
-            for(int i = 0; i<receivedNumbers.size(); i++){
+        if (receivedNumbers.size() > 0 && receivedNumbers.size() == receivedNames.size()) {
+            for (int i = 0; i < receivedNumbers.size(); i++) {
                 //android.util.Log.e("D", "Adding: "+ receivedNames.get(i)+ receivedNumbers.get(i));
                 alreadySelectedItems.add(new ListItem(receivedNames.get(i), receivedNumbers.get(i)));
             }
         }
 
 
-        listView = (ListView) findViewById(R.id.contactList);
+        listView = findViewById(R.id.contactList);
         listView.setBackgroundColor(ContextCompat.getColor(context, R.color.listItemBackground));
 
-        adapter=new myArrayAdapter(this, listItems);
+        adapter = new myArrayAdapter(this, listItems);
         listView.setAdapter(adapter);
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         listView.setItemsCanFocus(false);
 
-        progress = new ProgressDialog(this);
+        // progress = new ProgressDialog(this);
 
         int hasWriteContactsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
         // Should we show an explanation?
@@ -96,7 +117,7 @@ public class Contacts extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS},
                     REQUEST_CODE_ASK_PERMISSIONS);
 
-        }else {
+        } else {
 
             new runAsyncTask().execute(alreadySelectedItems);
             //populateContacts();
@@ -106,10 +127,10 @@ public class Contacts extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ListItem item = (ListItem) listView.getItemAtPosition(position);
-                if(selectedItems.contains(item)){
+                if (selectedItems.contains(item)) {
                     item.setSelected(false);
                     selectedItems.remove(item);
-                }else{
+                } else {
                     item.setSelected(true);
                     selectedItems.add(item);
                 }
@@ -120,9 +141,17 @@ public class Contacts extends AppCompatActivity {
 
     }
 
-    private void updateList(ArrayList<ListItem> listToDisplay){
+    private void updateList(ArrayList<ListItem> listToDisplay) {
         listItems.addAll(listToDisplay);
         allContacts.addAll(listToDisplay);
+        Collections.sort(listItems);
+        Collections.sort(allContacts);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateList(ListItem listItem) {
+        listItems.add(listItem);
+        allContacts.add(listItem);
         Collections.sort(listItems);
         Collections.sort(allContacts);
         adapter.notifyDataSetChanged();
@@ -131,9 +160,10 @@ public class Contacts extends AppCompatActivity {
     //Populates the contact list.
     // TODO: Make this return a small number each time so I can remove the progressDialog.
 
-    private class runAsyncTask extends AsyncTask<ArrayList<ListItem>, ArrayList<ListItem>, ArrayList<ListItem>> {
+    private class runAsyncTask extends AsyncTask<ArrayList<ListItem>, ListItem, ArrayList<ListItem>> {
+
         protected ArrayList<ListItem> doInBackground(ArrayList<ListItem>... params) {
-            ArrayList<ListItem> contactsList = new ArrayList<ListItem>();
+            ArrayList<ListItem> contactsList = new ArrayList<>();
             ContentResolver cr = getContentResolver();
             Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                     null, null, null, null);
@@ -160,6 +190,7 @@ public class Contacts extends AppCompatActivity {
                                     selectedItems.add(item);
                                 }
                             }
+                            publishProgress(item);
                             contactsList.add(item);
                         }
                         pCur.close();
@@ -167,24 +198,29 @@ public class Contacts extends AppCompatActivity {
 
                 }
             }
+            cur.close();
             return contactsList;
         }
 
         @Override
-        protected void onPreExecute(){
-            progress.setTitle("Loading");
+        protected void onPreExecute() {
+            /*progress.setTitle("Loading");
             progress.setMessage("Wait while fetching contacts...");
             progress.setCancelable(false);
-            progress.show();
+            progress.show();*/
         }
 
         protected void onProgressUpdate(ArrayList<ListItem>... progress) {
             updateList(progress[0]);
         }
 
+        protected void onProgressUpdate(ListItem... progress) {
+            updateList(progress[0]);
+        }
+
         protected void onPostExecute(ArrayList<ListItem> result) {
-            updateList(result);
-            progress.dismiss();
+            //updateList(result);
+            // progress.dismiss();
         }
     }
 
@@ -219,13 +255,13 @@ public class Contacts extends AppCompatActivity {
         SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
             public boolean onQueryTextChange(String newText) {
 
-                    listItems.clear();
-                    for (int i = 0; i < allContacts.size(); i++) {
-                        if (allContacts.get(i).getName().toLowerCase().contains(newText.toLowerCase())) {
-                            listItems.add(allContacts.get(i));
-                        }
+                listItems.clear();
+                for (int i = 0; i < allContacts.size(); i++) {
+                    if (allContacts.get(i).getName().toLowerCase().contains(newText.toLowerCase())) {
+                        listItems.add(allContacts.get(i));
                     }
-                    adapter.notifyDataSetChanged();
+                }
+                adapter.notifyDataSetChanged();
 
                 return true;
             }
@@ -246,9 +282,9 @@ public class Contacts extends AppCompatActivity {
             case R.id.actBarDone:
             case android.R.id.home:
                 Intent intent = new Intent();
-                ArrayList<String> numbers = new ArrayList<String>();
-                ArrayList<String> names = new ArrayList<String>();
-                for(int i = 0; i<selectedItems.size(); i++){
+                ArrayList<String> numbers = new ArrayList<>();
+                ArrayList<String> names = new ArrayList<>();
+                for (int i = 0; i < selectedItems.size(); i++) {
                     numbers.add(selectedItems.get(i).getNumber());
                     names.add(selectedItems.get(i).getName());
                 }
@@ -256,11 +292,11 @@ public class Contacts extends AppCompatActivity {
                 intent.putStringArrayListExtra("Number", numbers);
                 intent.putStringArrayListExtra("Names", names);
 
-                setResult(RESULT_OK,intent);
+                setResult(RESULT_OK, intent);
                 finish();
                 break;
             case R.id.actBarClear:
-                for(int i = 0; i < selectedItems.size(); i++){
+                for (int i = 0; i < selectedItems.size(); i++) {
                     selectedItems.get(i).setSelected(false);
                 }
                 selectedItems.clear();
@@ -270,6 +306,55 @@ public class Contacts extends AppCompatActivity {
         }
         return true;
     }
+
+
+    private Pair<String, String> getContact(String selection, int selectedType) {
+        String nameResult = "";
+        String noResult = "";
+        ContentResolver cr = getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, selection, null, null);
+
+        try {
+            if (cur.getCount() > 0) {
+                while (cur.moveToNext()) {
+                    String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    if (Integer.parseInt(cur.getString(
+                            cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+
+                        Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        if (pCur != null) {
+                            nameResult = name;
+                            ArrayList<String> tmpNums = new ArrayList<>();
+                            while (pCur.moveToNext()) {
+                                String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                                if (pCur.getInt(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE)) == selectedType) {
+                                    pCur.close();
+                                    cur.close();
+                                    return new Pair<>(nameResult, phoneNo);
+                                } else
+                                    tmpNums.add(phoneNo);
+                            }
+                            pCur.close();
+                            noResult = tmpNums.get(0);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        cur.close();
+        return new Pair<>(nameResult, noResult);
+    }
+
+}
 
 
     //This function was used before the asyncTask was added.
@@ -319,4 +404,4 @@ public class Contacts extends AppCompatActivity {
         Collections.sort(allContacts);
     } */
 
-}
+
