@@ -20,7 +20,7 @@ android:layout_height="match_parent">
     android:layout_alignParentRight="true"
     android:layout_marginRight="88dp" />
 
-<android.support.design.widget.FloatingActionButton
+<com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/fab2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@ android:layout_height="match_parent">
     android:layout_marginRight="88dp" />
 
 
-<android.support.design.widget.FloatingActionButton
+<com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/fabMenu1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@ android:layout_height="match_parent">
     android:layout_alignParentRight="true"
     android:layout_marginRight="24dp" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnFloat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
