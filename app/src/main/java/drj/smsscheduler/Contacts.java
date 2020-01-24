@@ -50,6 +50,8 @@ public class Contacts extends AppCompatActivity {
     private ArrayList<String> receivedNumbers = new ArrayList<>();
     private ArrayList<String> receivedNames = new ArrayList<>();
 
+    boolean QUICK_MSG_CONTACT = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +60,8 @@ public class Contacts extends AppCompatActivity {
         setSupportActionBar(mToolBar);
 
         Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.getInt("requestCode", 0) == MainActivity.GET_CONTACT_REQUEST) {
+            if (bundle != null){
+                if(bundle.getInt("requestCode", 0) == MainActivity.GET_CONTACT_REQUEST) {
                 String searchString = getIntent().getStringExtra("selection");
                 String selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE \"%" + searchString + "%\"";
 
@@ -76,6 +79,9 @@ public class Contacts extends AppCompatActivity {
 
                 setResult(RESULT_OK, intent);
                 finish();
+            }
+                else if( bundle.getInt("requestCode", 0) == MainActivity.QUICK_MSG_CONTACT_REQUEST)
+                    QUICK_MSG_CONTACT = true;
             }
 
 
@@ -107,6 +113,9 @@ public class Contacts extends AppCompatActivity {
 
         adapter = new myArrayAdapter(this, listItems);
         listView.setAdapter(adapter);
+
+
+
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         listView.setItemsCanFocus(false);
 
@@ -132,12 +141,26 @@ public class Contacts extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ListItem item = (ListItem) listView.getItemAtPosition(position);
-                if (selectedItems.contains(item)) {
-                    item.setSelected(false);
-                    selectedItems.remove(item);
+                if(QUICK_MSG_CONTACT){ //make it possible to only select one at a time.
+                    if (selectedItems.contains(item)) {
+                        item.setSelected(false);
+                        selectedItems.remove(item);
+                    } else {
+                        for(int i = 0; i<selectedItems.size(); i++){
+                            selectedItems.get(i).setSelected(false);
+                        }
+                        selectedItems.clear();
+                        item.setSelected(true);
+                        selectedItems.add(item);
+                    }
                 } else {
-                    item.setSelected(true);
-                    selectedItems.add(item);
+                    if (selectedItems.contains(item)) {
+                        item.setSelected(false);
+                        selectedItems.remove(item);
+                    } else {
+                        item.setSelected(true);
+                        selectedItems.add(item);
+                    }
                 }
 
                 adapter.notifyDataSetChanged();
@@ -211,8 +234,9 @@ public class Contacts extends AppCompatActivity {
                             return contactsList;
                         while (pCur.moveToNext()) {
                             String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            int phoneNumberType = pCur.getInt(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
                             //android.util.Log.i("Contacts", "Name: " + name + ", Phone No: " + phoneNo);
-                            ListItem item = new ListItem(name, phoneNo);
+                            ListItem item = new ListItem(name, phoneNo, phoneNumberType);
                             publishProgress(item);
                             contactsList.add(item);
                         }
@@ -307,13 +331,16 @@ public class Contacts extends AppCompatActivity {
                 Intent intent = new Intent();
                 ArrayList<String> numbers = new ArrayList<>();
                 ArrayList<String> names = new ArrayList<>();
+                int phoneNumberType = -1;
                 for (int i = 0; i < selectedItems.size(); i++) {
                     numbers.add(selectedItems.get(i).getNumber());
                     names.add(selectedItems.get(i).getName());
+                    phoneNumberType = selectedItems.get(i).getPhoneNumberType();
                 }
 
                 intent.putStringArrayListExtra("Number", numbers);
                 intent.putStringArrayListExtra("Names", names);
+                intent.putExtra("phoneNumberType", phoneNumberType);
 
                 setResult(RESULT_OK, intent);
                 finish();
