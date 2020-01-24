@@ -1,11 +1,8 @@
 package drj.smsscheduler;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.Comparator;
 
 /**
  * Created by David on 2016-06-05.
@@ -14,13 +11,19 @@ import java.util.Comparator;
 public class ListItem implements Item, Comparable<ListItem> {
     private String name;
     private String number;
-    private int color;
+    private int phoneNumberType; //if it's a number to work/mobile/home etc.
+    //private int color;
     private boolean selected = false;
     private View view;
 
     public ListItem(String name, String number) {
         this.name = name;
         this.number = number;
+    }
+    public ListItem(String name, String number, int phoneNumberType) {
+        this.name = name;
+        this.number = number;
+        this.phoneNumberType = phoneNumberType;
     }
 
     @Override
@@ -32,14 +35,14 @@ public class ListItem implements Item, Comparable<ListItem> {
     public View getView(LayoutInflater inflater, View convertView) {
 
         if (convertView == null) {
-            view = (View) inflater.inflate(R.layout.contact_list_item, null);
+            view = inflater.inflate(R.layout.contact_list_item, null);
             // Do some initialization
         } else {
             view = convertView;
         }
 
-        TextView text1 = (TextView) view.findViewById(R.id.listItem1);
-        TextView text2 = (TextView) view.findViewById(R.id.listItem2);
+        TextView text1 = view.findViewById(R.id.listItem1);
+        TextView text2 = view.findViewById(R.id.listItem2);
         text1.setText(name);
         text2.setText(number);
 
@@ -60,6 +63,10 @@ public class ListItem implements Item, Comparable<ListItem> {
         return number;
     }
 
+    public int getPhoneNumberType() {
+        return phoneNumberType;
+    }
+
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
@@ -74,17 +81,14 @@ public class ListItem implements Item, Comparable<ListItem> {
     }
 
     public boolean equals(ListItem l){
-        if(name.equalsIgnoreCase(l.getName()) && number.equalsIgnoreCase(l.getNumber()))
-            return true;
-        else
-            return false;
+        return name.equalsIgnoreCase(l.getName()) && number.equalsIgnoreCase(l.getNumber());
     }
 
-    public void setBackgroundColor(int color){
+    /*public void setBackgroundColor(int color){
         if(view != null) {
             view.setBackgroundColor(color);
         }else
             this.color = color;
-    }
+    }*/
 
 }
