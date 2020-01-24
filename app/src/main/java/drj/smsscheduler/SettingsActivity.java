@@ -76,12 +76,20 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences settings = getSharedPreferences("prefs", Context.MODE_PRIVATE);
                 //SharedPreferences settings = getPreferences((SettingsActivity.this);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString("quick_msg_name", names.get(0));
-                editor.putString("quick_msg_number", numbers.get(0));
-                editor.putInt("quick_msg_numType", numType);
-                editor.putString(pref.getKey(), names.get(0));
+                if(names.isEmpty()) {
+                    pref.setSummary("None selected.");
+                    editor.putString("quick_msg_name", "");
+                    editor.putString("quick_msg_number", "");
+                    editor.putInt("quick_msg_numType", -1);
+                    editor.putString(pref.getKey(), "");
+                }else {
+                    editor.putString("quick_msg_name", names.get(0));
+                    editor.putString("quick_msg_number", numbers.get(0));
+                    editor.putInt("quick_msg_numType", numType);
+                    editor.putString(pref.getKey(), names.get(0));
+                    pref.setSummary(names.get(0));
+                }
                 editor.apply();
-                pref.setSummary(names.get(0));
 
             }
 

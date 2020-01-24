@@ -182,22 +182,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         txtFabMenu1 = findViewById(R.id.txtOMW);
 
 
-        btnFloat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                findViewById(R.id.txtOMW).setVisibility(View.VISIBLE);
-                //fab2_share.startAnimation(fabAnimOpen);
-                //fab1_mail.startAnimation(fabAnimOpen);
-                //fab_main.startAnimation(fabanimClock);
-                findViewById(R.id.fabMenu1).setVisibility(View.VISIBLE);
-                findViewById(R.id.fabMenu1).setClickable(true);
-                fabIsOpen = true;
-
-            }
-        });
-
-        btnFloat.setOnClickListener(new View.OnClickListener() {
+       btnFloat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -223,9 +208,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             public void onClick(View view) {
                 Intent contactIntent = new Intent(MainActivity.this, Contacts.class);
                 contactIntent.putExtra("requestCode", GET_CONTACT_REQUEST);
-                if(!omwName.isEmpty())
+                if(omwName.isEmpty())
+                    Toast.makeText(MainActivity.this, "No contact choosen, select one in the settings.", Toast.LENGTH_LONG).show();
+                else {
                     contactIntent.putExtra("selection", omwName);
-                startActivityForResult(contactIntent, GET_CONTACT_REQUEST);
+                    startActivityForResult(contactIntent, GET_CONTACT_REQUEST);
+                }
 
             }
         });
