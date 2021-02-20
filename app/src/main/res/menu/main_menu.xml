@@ -22,9 +22,11 @@
         android:title="@string/log"
         app:showAsAction="ifRoom"/>
 
-<!-- Settings, should always be in the overflow >
-<item android:id="@+id/action_settings"
-    android:title="@string/settings"
-    app:showAsAction="never"/-->
+<!-- Settings, should always be in the overflow -->
+    <item
+        android:id="@+id/actBarSettings"
+        android:icon="@drawable/ic_settings_black_24"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
 
 </menu>

@@ -6,18 +6,21 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     final private int REQUEST_CODE_ASK_PERMISSIONS = 51263;
     final public int PICK_CONTACT_REQUEST = 1;
     public static int GET_CONTACT_REQUEST = 2;
+    public static int QUICK_MSG_CONTACT_REQUEST = 3;
     private boolean SHOW_CLEAR_BUTTON = false;
 
     private Context context;
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private Animation fabAnimOpen, fabAnimClose, fabanimClock, fabAnimAntiClock;
     private ArrayList<String> numbers = new ArrayList<>();
     private ArrayList<String> names = new ArrayList<>();
+    private String omwName = "";
 
     private AlarmManager alarmManager;
     private Calendar calendar;
@@ -158,69 +163,42 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        refreshFAB();
+    }
+
     private void InitializeFAB() {
 
         btnFloat = findViewById(R.id.btnFloat);
         fabMenu1 = findViewById(R.id.fabMenu1);
-        fabMenu2 = findViewById(R.id.fab2);
+
         fabAnimOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fabAnimClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
         fabAnimAntiClock = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_anticlock);
         fabanimClock = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_rotate_clock);
         txtFabMenu1 = findViewById(R.id.txtOMW);
-        txtFabMenu2 = findViewById(R.id.textview_share);
 
-        btnFloat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                findViewById(R.id.txtOMW).setVisibility(View.VISIBLE);
-                findViewById(R.id.textview_share).setVisibility(View.VISIBLE);
-                //fab2_share.startAnimation(fabAnimOpen);
-                //fab1_mail.startAnimation(fabAnimOpen);
-                //fab_main.startAnimation(fabanimClock);
-                findViewById(R.id.fab2).setVisibility(View.VISIBLE);
-                findViewById(R.id.fabMenu1).setVisibility(View.VISIBLE);
-                findViewById(R.id.fab2).setClickable(true);
-                findViewById(R.id.fabMenu1).setClickable(true);
-                fabIsOpen = true;
-
-            }
-        });
-
-        btnFloat.setOnClickListener(new View.OnClickListener() {
+       btnFloat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (fabIsOpen) {
-
                     txtFabMenu1.setVisibility(View.INVISIBLE);
-                    txtFabMenu2.setVisibility(View.INVISIBLE);
-                    fabMenu2.startAnimation(fabAnimClose);
                     fabMenu1.startAnimation(fabAnimClose);
                     btnFloat.startAnimation(fabAnimAntiClock);
-                    fabMenu2.setClickable(false);
                     fabMenu1.setClickable(false);
                     fabIsOpen = false;
                 } else {
                     txtFabMenu1.setVisibility(View.VISIBLE);
-                    txtFabMenu2.setVisibility(View.VISIBLE);
-                    fabMenu2.startAnimation(fabAnimOpen);
                     fabMenu1.startAnimation(fabAnimOpen);
                     btnFloat.startAnimation(fabanimClock);
-                    fabMenu2.setClickable(true);
                     fabMenu1.setClickable(true);
                     fabIsOpen = true;
                 }
-
-            }
-        });
-
-
-        fabMenu2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Share", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -229,16 +207,28 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             @Override
             public void onClick(View view) {
                 Intent contactIntent = new Intent(MainActivity.this, Contacts.class);
-                contactIntent.putStringArrayListExtra("Numbers", numbers);
-                contactIntent.putStringArrayListExtra("Names", names);
                 contactIntent.putExtra("requestCode", GET_CONTACT_REQUEST);
-                contactIntent.putExtra("selection", "1David");
-                startActivityForResult(contactIntent, GET_CONTACT_REQUEST);
-                //numbers = "+46"
-                Toast.makeText(getApplicationContext(), "Share", Toast.LENGTH_SHORT).show();
+                if(omwName.isEmpty())
+                    Toast.makeText(MainActivity.this, "No contact choosen, select one in the settings.", Toast.LENGTH_LONG).show();
+                else {
+                    contactIntent.putExtra("selection", omwName);
+                    startActivityForResult(contactIntent, GET_CONTACT_REQUEST);
+                }
 
             }
         });
+
+        refreshFAB();
+
+    }
+
+    private void refreshFAB(){
+        SharedPreferences settings = getSharedPreferences("prefs", MODE_PRIVATE);
+        omwName = settings.getString("quick_msg_name", "");
+        String number = settings.getString("quick_msg_number", "");
+        int numType = settings.getInt("quick_msg_numType", -1);
+
+        txtFabMenu1.setText("OMW " + omwName);
 
     }
 
@@ -402,6 +392,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
                 return true;
 
+            case R.id.actBarSettings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+
+                startActivity(settingsIntent);
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -412,6 +408,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         // Check which request we're responding to
         if (requestCode == PICK_CONTACT_REQUEST) {
             // Make sure the request was successful

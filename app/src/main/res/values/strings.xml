@@ -11,4 +11,6 @@
     <string name="number">Number</string>
     <string name="chooseTime">Choose Time</string>
     <string name="chooseContacts">Choose Contact(s)</string>
+
+    <string name="title_activity_settings">Settings</string>
 </resources>
